@@ -70,7 +70,7 @@ def register():
                 con.commit()
                 messagebox.showinfo('Success',"User registered successfully")
             except:
-                messagebox.showinfo("Error","User already Exists")    
+                messagebox.showinfo("Error","Error occured")    
         
 
     root=tk.Tk()

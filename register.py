@@ -1,7 +1,6 @@
 import tkinter as tk
 from tkinter import messagebox
 import re
-import csv
 import pymysql
 import bcrypt
 
@@ -60,51 +59,51 @@ def register():
             email=email_entry.get()
             bytes=pwd.encode('utf-8')
             salt=bcrypt.gensalt()
-            hash = bcrypt.hashpw(bytes, salt) 
+            hashedpwd = bcrypt.hashpw(bytes, salt) 
             
             con=pymysql.connect(host='localhost',user='root',password='ROOT123')
             cursor=con.cursor()
-            #usertable="User"
-            query = "insert into User values('"+username+"','"+hash+"','"+email+"')"
+            
+            query = "insert into User values('"+username+"','"+str(hashedpwd)+"','"+email+"')"
             try:
                 cursor.execute(query)
                 con.commit()
                 messagebox.showinfo('Success',"User registered successfully")
             except:
-                messagebox.showinfo("Error","Already Exists")    
+                messagebox.showinfo("Error","User already Exists")    
         
 
     root=tk.Tk()
     root.title("Register page")
     root.geometry("600x600")
     root.configure(bg="orange")
-    l1=tk.Label(root, text="Register",font=10)
+    l1=tk.Label(root, text="Register",font=10,fg="brown")
     l1.grid(row=0,column=1)
-    un_lbl=tk.Label(root, text="Username: ")
+    un_lbl=tk.Label(root, text="Username: ",fg="brown")
     un_lbl.grid(row=2,column=0)
     un_entry=tk.Entry(root)
     un_entry.grid(row=2,column=1)
 
-    pwd_lbl=tk.Label(root, text="Password: ")
+    pwd_lbl=tk.Label(root, text="Password: ",fg="brown")
     pwd_lbl.grid(row=3,column=0)
-    pwd_entry=tk.Entry(root)
+    pwd_entry=tk.Entry(root,show="*")
     pwd_entry.grid(row=3,column=1)
-    pwd_strength_lbl=tk.Label(root)
+    pwd_strength_lbl=tk.Label(root,fg="brown")
     pwd_strength_lbl.grid(row=4,column=1)
-    pwd_strength_lbl1=tk.Label(root)
+    pwd_strength_lbl1=tk.Label(root,fg="brown")
     pwd_strength_lbl1.grid(row=5,column=1)
-    pwd_strength_lbl2=tk.Label(root)
+    pwd_strength_lbl2=tk.Label(root,fg="brown")
     pwd_strength_lbl2.grid(row=6,column=1)
-    pwd_strength_lbl3=tk.Label(root)
+    pwd_strength_lbl3=tk.Label(root,fg="brown")
     pwd_strength_lbl3.grid(row=7,column=1)
-    pwd_strength_lbl4=tk.Label(root)
+    pwd_strength_lbl4=tk.Label(root,fg="brown")
     pwd_strength_lbl4.grid(row=8,column=1)
 
-    email_lbl=tk.Label(root, text="Email: ")
+    email_lbl=tk.Label(root, text="Email: ",fg="brown")
     email_lbl.grid(row=9,column=0)
     email_entry=tk.Entry(root)
     email_entry.grid(row=9, column=1)
 
-    submit_btn=tk.Button(root, text="Submit",command=submit)
+    submit_btn=tk.Button(root, text="Submit",command=submit,bg="brown",fg="white")
     submit_btn.grid(row=10,column=1)
     root.mainloop()

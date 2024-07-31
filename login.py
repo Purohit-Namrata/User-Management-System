@@ -155,8 +155,6 @@ def login():
             selectedtaskindex=t1.curselection()
             b1=tk.Button(root,text="Update",bg="brown",fg="white",command=update)
             b1.grid(row=4,column=1)
-
-
            
         def managepwd():
             def changepwd():
@@ -186,8 +184,25 @@ def login():
             e1.grid(row=5,column=1)
             b1=tk.Button(root2,text="Change Password",fg="Brown",command=changepwd)
             b1.grid(row=6,column=1)
-
         
+        def deleteacc():
+            def delete():
+                un=e1.get()
+                query="delete * from User where Username="+un
+                cursor.execute(query)
+                con.commit()
+                messagebox.showinfo("Success","Account deleted successfully")
+                root2.destroy()
+                login()
+            answer=messagebox.showinfo("Sure?","Are you sure you want to delete your account?")
+            if answer:
+                l1=tk.Label(root2,text="Enter Username")
+                l1.grid(row=3,column=1)
+                e1=tk.Entry(root2)
+                e1.grid(row=4,column=1)
+                b1=tk.Button(root2,text="delete",bg="brown",fg="white",command=delete)
+                b1.grid(row=4,column=1)
+                
 
         def logout():
                 answer=messagebox.askyesno("Sure?","Are you sure you want to logout?")
@@ -210,7 +225,7 @@ def login():
         b4.grid(row=2,column=3)
         b5=tk.Button(root2,text="Manage password",width=10,command=managepwd,fg="white",bg="brown")
         b5.grid(row=2,column=4)
-        b6=tk.Button(root2, text="Logout",width=10)
+        b6=tk.Button(root2, text="Logout",width=10,command=logout)
         b6.grid(row=2,column=5)
 
         root2.mainloop()
@@ -231,18 +246,21 @@ def login():
             if dbuser == username:
                 cursor.execute('select %s from User') % pwd
                 dbpass = cursor.fetchone()
+
                 userBytes = pwd.encode('utf-8') 
-                result = bcrypt.checkpw(userBytes, dbpass) 
+                salt = bcrypt.gensalt() 
+                hash = bcrypt.hashpw(bytes, salt) 
+                result = bcrypt.checkpw(userBytes, hash) 
                 
-                if dbpass == pwd:
-                    return "True"
+                if dbpass == result:
+                    messagebox.showinfo("User logged in",f"Welcome,{username}")
+                    loginpage()
                 else:
-                    return "Password is incorrect."
+                    messagebox.showinfo("Error","Password is incorrect") 
 
             else:
-                return "Username is incorrect." 
-        messagebox.showinfo("User logged in",f"Welcome,{username}")
-        loginpage()
+                messagebox.showinfo("Error", "Username is incorrect.") 
+        
 
     root=tk.Tk()
     root.title("Login page")

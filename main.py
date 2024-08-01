@@ -1,15 +1,6 @@
 import tkinter as tk
 from register import *
 from login import *
-import pymysql
-
-con=pymysql.connect(host='localhost',user='root',password='ROOT123')
-cursor=con.cursor()
-
-#cursor.execute("CREATE DATABASE IF NOT EXISTS user_mgmt")
-#cursor.execute("USE user_mgmt")
-
-#cursor.execute("CREATE TABLE User(Username VARCHAR(20) PRIMARY KEY NOT NULL, Password VARCHAR(20) NOT NULL, Email VARCHAR(20) NOT NULL)")
 
 root=tk.Tk()
 root.title("User Management Sytem")

@@ -5,6 +5,7 @@ from PIL import ImageTk,Image
 import os 
 import pandas as pd
 import re
+from tkinter import PhotoImage,Label
 
 
 def login():
@@ -90,15 +91,17 @@ def login():
                
         def uploadimage():
             def upload():
-                info1=path_entry.get()
+                info1=str(path_entry.get())
                 if info1=="":
                     messagebox.showinfo("Error","PLease enter path")
                     return
-                
-                img=Image.open(info1).resize((250,188))
-                img=ImageTk.PhotoImage(img)
-                l3=tk.Label(root2,image=img,bd=2,relief="raised")
-                l3.grid()
+                frame = tk.Frame(root2, width=200, height=200, bg="white")
+                frame.grid(row=5,column=5,pady=20)  # Adjust padding as necessary
+                image=Image.open(info1)
+                image = image.resize((200, 200), Image.Resampling.LANCZOS)
+                photo_image=ImageTk.PhotoImage(image)
+                l3=tk.Label(frame,image=photo_image,bd=2,relief="raised")
+                l3.pack()
                 
 
             lbl=tk.Label(root2, text="Enter path to upload image",fg="brown")
@@ -138,17 +141,7 @@ def login():
                     
         def updateprofile():
             def update():
-
-                if selectedtaskindex=="Username":
-                    l1=tk.Label(root2,text="Enter old username and new username ",fg="Brown")
-                    l1.grid(row=10,column=1)
-                
-
-                    e1=tk.Entry(root2)
-                    e1.grid(row=11,column=1)
-                    e2=tk.Entry(root2)
-                    e2.pack(row=12,column=1)
-                    
+                def update_un():
                     oldun=e1.get()
                     newun=e2.get()
                     if oldun=="" or newun=="":
@@ -166,15 +159,23 @@ def login():
                     df.to_csv("C:/Users/BLAUPLUG/Documents/Python_programs/User Management System/userdb.csv", index=False) 
                
                     messagebox.showinfo("Success","Username updated succesfully")
+               
 
-                if selectedtaskindex==1:
-                    l1=tk.Label(root2,text="Enter old email and new email ",fg="Brown")
-                    l1.grid(row=2,column=4)
+                selecteditem=t1.get(0)
+                if selecteditem=="Username":
+                    l1=tk.Label(root2,text="Enter old username and new username ",fg="Brown")
+                    l1.grid(row=10,column=1)
+
                     e1=tk.Entry(root2)
-                    e1.grid(row=3,column=4)
+                    e1.grid(row=11,column=1)
                     e2=tk.Entry(root2)
-                    e2.grid(row=4,column=4)
+                    e2.grid(row=12,column=1)
                     
+                    
+                    updateun_btn=tk.Button(root2,text="Update Username",fg="white",bg="brown",command=update_un)
+                    updateun_btn.grid(row=5,column=1)
+                     
+                def update_em():
                     oldemail=e1.get()
                     newemail=e2.get()
                     if oldemail=="" or newemail=="":
@@ -190,7 +191,6 @@ def login():
                         messagebox.showinfo("Error","Please enter a valid new email id")
                         return
 
-                    
                     df = pd.read_csv("C:/Users/BLAUPLUG/Documents/Python_programs/User Management System/userdb.csv") 
                     df['Username'] = df['Username'].replace({oldemail: newemail}) 
                     df.to_csv("C:/Users/BLAUPLUG/Documents/Python_programs/User Management System/userdb.csv", index=False) 
@@ -198,14 +198,38 @@ def login():
                     messagebox.showinfo("Success","Email updated succesfully")
 
     
+                selecteditem=t1.get(1)
+                if selecteditem=="Email":
+                    l1=tk.Label(root2,text="Enter old email and new email ",fg="Brown")
+                    l1.grid(row=12,column=4)
+                    e1=tk.Entry(root2)
+                    e1.grid(row=14,column=4)
+                    e2=tk.Entry(root2)
+                    e2.grid(row=15,column=4)
+                    
+                    
+                    updateem_btn=tk.Button(root2,text="Update Email",fg="white",bg="brown",command=update_em)
+                    updateem_btn.grid(row=16,column=4)
+                    
 
             l4=tk.Label(root2,text="What do you want to update?",fg="Brown")
             l4.grid(row=13,column=1)
-            t1=tk.Listbox(root2,height = 5, width = 10)
-            t1.insert(tk.END,"Username\n")
-            t1.insert(tk.END,"Email")
+            t1=tk.Listbox(root2,height = 5, width = 10,selectmode=tk.MULTIPLE)
+            items=("Username","Email")
+            t1.insert(0,*items)
+            
             t1.grid(row=14,column=1)
-            selectedtaskindex=t1.curselection()
+            '''t1.insert("Username")
+            t1.insert("Email")
+            
+            def selected_item():
+                for i in t1.curselection():
+                    return(t1.get(i))
+                    
+            
+            selecteditem=selected_item()
+            print(selecteditem)'''
+            
             b1=tk.Button(root2,text="Update",bg="brown",fg="white",command=update)
             b1.grid(row=15,column=1)
            

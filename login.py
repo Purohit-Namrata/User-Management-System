@@ -36,9 +36,10 @@ def login():
                         messagebox.showinfo("Error","Please enter a valid username")
                         return
                     
-                    df = pd.read_csv('C:/Users/BLAUPLUG/Documents/Python_programs/User Management System/userdb.csv', index_col='Username')
-                    df = df.drop(un)
-                    df.to_csv('C:/Users/BLAUPLUG/Documents/Python_programs/User Management System/userdb.csv', index=True)
+                    df = pd.read_csv('C:/Users/BLAUPLUG/Documents/Python_programs/User Management System/userdb.csv')
+                    
+                    df = df.drop(df[df.Username == un].index)
+                    df.to_csv('C:/Users/BLAUPLUG/Documents/Python_programs/User Management System/userdb.csv', index=False)
                                     
                     messagebox.showinfo("Success","Account deleted")
                 
@@ -126,9 +127,7 @@ def login():
                         for row in reader:
                             if un in row:
                                 messagebox.showinfo("User Details", f"Username: {row[0]}\nPassword: {row[1]}\nEmail: {row[2]}")
-                                return
-                            messagebox.showerror("Error", "User not found!")
-                            
+                                return                           
                     
 
             l1=tk.Label(root2,text="Enter username",fg="Brown")
@@ -239,15 +238,13 @@ def login():
                 em=e1.get()
                 pwd=e2.get()
 
-                if e1=="" or e2=="":
-                    messagebox.showinfo("Error","Email field is required")
-                
+                if em=="" or pwd=="":
+                    messagebox.showinfo("Error","All fields are required")
+                                
 
                 df = pd.read_csv("C:/Users/BLAUPLUG/Documents/Python_programs/User Management System/userdb.csv") 
-                df.loc[em,"password"] = pwd            
-                
+                df.loc[em,"Password"] = pwd            
                 df.to_csv("C:/Users/BLAUPLUG/Documents/Python_programs/User Management System/userdb.csv", index=False) 
-
                 messagebox.showinfo("Success","Password changed successfully")
                 
             
@@ -272,9 +269,9 @@ def login():
                 if not re.match(r'^[A-Za-z\s]+$',un):
                     messagebox.showinfo("Error","Please enter a valid username")
                     return
-                df = pd.rejad_csv('C:/Users/BLAUPLUG/Documents/Python_programs/User Management System/userdb.csv', index_col='Username')
-                df = df.drop(un)
-                df.to_csv('C:/Users/BLAUPLUG/Documents/Python_programs/User Management System/userdb.csv', index=True)
+                df = pd.read_csv('C:/Users/BLAUPLUG/Documents/Python_programs/User Management System/userdb.csv')
+                df = df.drop(df[df.Username == un].index)
+                df.to_csv('C:/Users/BLAUPLUG/Documents/Python_programs/User Management System/userdb.csv', index=False)
                 
                 messagebox.showinfo("Success","Account deleted successfully")
                 root2.destroy()

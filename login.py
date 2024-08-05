@@ -36,8 +36,9 @@ def login():
                         messagebox.showinfo("Error","Please enter a valid username")
                         return
                     
-                    df = pd.read_csv('C:/Users/BLAUPLUG/Documents/Python_programs/User Management System/userdb.csv')
-                    df = df.drop(df[df.Username == un].index)
+                    df = pd.read_csv('C:/Users/BLAUPLUG/Documents/Python_programs/User Management System/userdb.csv',index_col='Username')
+                    #df = df.drop(df[df.Username == un].index)
+                    df=df.drop(un)
                     df.to_csv('C:/Users/BLAUPLUG/Documents/Python_programs/User Management System/userdb.csv', index=False)
                                     
                     messagebox.showinfo("Success","Account deleted")
@@ -45,7 +46,6 @@ def login():
                 lbl=tk.Label(root1,text="Enter username to delete account",fg="Brown")
                 lbl.grid(row=6,column=0)
                 e1=tk.Entry(root1)
-                
                 e1.grid(row=6,column=1)
                 
                 b1=tk.Button(root1,text="Delete",command=deleterow,bg="Brown",fg="White")
@@ -90,19 +90,22 @@ def login():
                
         def uploadimage():
             def upload():
-                info1=str(path_entry.get())
+                info1=path_entry.get()
                 if info1=="":
                     messagebox.showinfo("Error","PLease enter path")
                     return
-                frame = tk.Frame(root2, width=200, height=200, bg="white")
-                frame.grid(row=5,column=5,pady=20)  # Adjust padding as necessary
-                image=Image.open(info1)
-                image = image.resize((200, 200), Image.Resampling.LANCZOS)
-                photo_image=ImageTk.PhotoImage(image)
-                l3=tk.Label(frame,image=photo_image,bd=2,relief="raised")
-                l3.pack()
                 
+                canvas=tk.Canvas(root2,bg='white',width=200,height=200)
+                canvas.grid(row=5,column=5)
+                img=Image.open("C:/Users/BLAUPLUG/Documents/Python_programs/User Management System/flower.jpg")
+                image = img.resize((180, 180))
+                photo_image=ImageTk.PhotoImage(image)
+                canvas.photo_image=photo_image
+                canvas.create_image(image=photo_image,anchor=tk.CENTER)
 
+                #l3=tk.Label(canvas,image=photo_image)
+                #l3.pack()
+                
             lbl=tk.Label(root2, text="Enter path to upload image",fg="brown")
             lbl.grid(row=3,column=1)
             path_entry=tk.Entry(root2,width=20)
@@ -131,7 +134,6 @@ def login():
             b1=tk.Button(root2,text="View profile",bg="brown",fg="white",command=view)
             b1.grid(row=9,column=1)
             
-                    
         def updateprofile():
             def update():
                 def update_un():
@@ -150,7 +152,7 @@ def login():
                     df = pd.read_csv("C:/Users/BLAUPLUG/Documents/Python_programs/User Management System/userdb.csv") 
                     df['Username'] = df['Username'].replace({oldun: newun}) 
                     df.to_csv("C:/Users/BLAUPLUG/Documents/Python_programs/User Management System/userdb.csv", index=False) 
-               
+            
                     messagebox.showinfo("Success","Username updated succesfully")
                
                 selecteditem=t1.get(0)
@@ -245,8 +247,10 @@ def login():
                 if not re.match(r'^[A-Za-z\s]+$',un):
                     messagebox.showinfo("Error","Please enter a valid username")
                     return
-                df = pd.read_csv('C:/Users/BLAUPLUG/Documents/Python_programs/User Management System/userdb.csv')
-                df = df.drop(df[df.Username == un].index)
+                
+                df = pd.read_csv('C:/Users/BLAUPLUG/Documents/Python_programs/User Management System/userdb.csv',index_col='Username')
+                df=df.drop(un)
+                #df = df.drop(df[df.Username == un].index)
                 df.to_csv('C:/Users/BLAUPLUG/Documents/Python_programs/User Management System/userdb.csv', index=False)
                 
                 messagebox.showinfo("Success","Account deleted successfully")
@@ -260,7 +264,6 @@ def login():
             b1=tk.Button(root2,text="delete",bg="brown",fg="white",command=delete)
             b1.grid(row=23,column=1)
                 
-
         def logout():
                 answer=messagebox.askyesno("Sure?","Are you sure you want to logout?")
                 if answer:

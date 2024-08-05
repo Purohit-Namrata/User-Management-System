@@ -13,8 +13,8 @@ def login():
         def adminpage():
             
             def viewall():
-                if os.path.exists("userdb.csv"):
-                    with open("userdb.csv", "r") as file:
+                if os.path.exists("C:/Users/BLAUPLUG/Documents/Python_programs/User Management System/userdb.csv"):
+                    with open("C:/Users/BLAUPLUG/Documents/Python_programs/User Management System/userdb.csv", "r") as file:
                         reader = csv.reader(file)
                         users = [row for row in reader]
                         if users:
@@ -37,7 +37,6 @@ def login():
                         return
                     
                     df = pd.read_csv('C:/Users/BLAUPLUG/Documents/Python_programs/User Management System/userdb.csv')
-                    
                     df = df.drop(df[df.Username == un].index)
                     df.to_csv('C:/Users/BLAUPLUG/Documents/Python_programs/User Management System/userdb.csv', index=False)
                                     
@@ -46,13 +45,12 @@ def login():
                 lbl=tk.Label(root1,text="Enter username to delete account",fg="Brown")
                 lbl.grid(row=6,column=0)
                 e1=tk.Entry(root1)
+                
                 e1.grid(row=6,column=1)
                 
                 b1=tk.Button(root1,text="Delete",command=deleterow,bg="Brown",fg="White")
                 b1.grid(row=8,column=1)
-                
-
-
+                              
             def logout():
                 answer=messagebox.askyesno("Sure?","Are you sure you want to logout?")
                 if answer:
@@ -111,14 +109,11 @@ def login():
             path_entry.grid(row=4,column=1)
             b1=tk.Button(root2,text="Upload",command=upload,bg="brown",fg="white")
             b1.grid(row=5,column=1)
-            
-            
-
         
         def viewprofile():
             def view():
                 un=e1.get()
-                if not re.match(r"^[A-za-z\s]+$",un):
+                if not re.match(r"^[A-Za-z\s]+$",un):
                     messagebox.showinfo("Error","Please enter valid Username")
                     return
                 if os.path.exists("C:/Users/BLAUPLUG/Documents/Python_programs/User Management System/userdb.csv"):
@@ -129,7 +124,6 @@ def login():
                                 messagebox.showinfo("User Details", f"Username: {row[0]}\nPassword: {row[1]}\nEmail: {row[2]}")
                                 return                           
                     
-
             l1=tk.Label(root2,text="Enter username",fg="Brown")
             l1.grid(row=7,column=0)
             e1=tk.Entry(root2)
@@ -146,10 +140,10 @@ def login():
                     if oldun=="" or newun=="":
                         messagebox.showinfo("Error","All fields are required")
 
-                    if not re.match(r"^[A-za-z\s]+$",oldun):
+                    if not re.match(r"^[A-Za-z\s]+$",oldun):
                         messagebox.showinfo("Error","Please enter valid old username")
                         return
-                    if not re.match(r"^[A-za-z\s]+$",newun):
+                    if not re.match(r"^[A-Za-z\s]+$",newun):
                         messagebox.showinfo("Error","Please enter valid new username")
                         return
                     
@@ -159,7 +153,6 @@ def login():
                
                     messagebox.showinfo("Success","Username updated succesfully")
                
-
                 selecteditem=t1.get(0)
                 if selecteditem=="Username":
                     l1=tk.Label(root2,text="Enter old username and new username ",fg="Brown")
@@ -169,8 +162,7 @@ def login():
                     e1.grid(row=11,column=1)
                     e2=tk.Entry(root2)
                     e2.grid(row=12,column=1)
-                    
-                    
+                                        
                     updateun_btn=tk.Button(root2,text="Update Username",fg="white",bg="brown",command=update_un)
                     updateun_btn.grid(row=5,column=1)
                      
@@ -195,7 +187,6 @@ def login():
                     df.to_csv("C:/Users/BLAUPLUG/Documents/Python_programs/User Management System/userdb.csv", index=False) 
                
                     messagebox.showinfo("Success","Email updated succesfully")
-
     
                 selecteditem=t1.get(1)
                 if selecteditem=="Email":
@@ -206,11 +197,9 @@ def login():
                     e2=tk.Entry(root2)
                     e2.grid(row=15,column=4)
                     
-                    
                     updateem_btn=tk.Button(root2,text="Update Email",fg="white",bg="brown",command=update_em)
                     updateem_btn.grid(row=16,column=4)
                     
-
             l4=tk.Label(root2,text="What do you want to update?",fg="Brown")
             l4.grid(row=13,column=1)
             t1=tk.Listbox(root2,height = 5, width = 10,selectmode=tk.MULTIPLE)
@@ -218,36 +207,23 @@ def login():
             t1.insert(0,*items)
             
             t1.grid(row=14,column=1)
-            '''t1.insert("Username")
-            t1.insert("Email")
-            
-            def selected_item():
-                for i in t1.curselection():
-                    return(t1.get(i))
-                    
-            
-            selecteditem=selected_item()
-            print(selecteditem)'''
             
             b1=tk.Button(root2,text="Update",bg="brown",fg="white",command=update)
             b1.grid(row=15,column=1)
            
         def managepwd():
             def changepwd():
-                
                 em=e1.get()
                 pwd=e2.get()
 
                 if em=="" or pwd=="":
                     messagebox.showinfo("Error","All fields are required")
                                 
-
                 df = pd.read_csv("C:/Users/BLAUPLUG/Documents/Python_programs/User Management System/userdb.csv") 
                 df.loc[em,"Password"] = pwd            
                 df.to_csv("C:/Users/BLAUPLUG/Documents/Python_programs/User Management System/userdb.csv", index=False) 
                 messagebox.showinfo("Success","Password changed successfully")
                 
-            
             l1=tk.Label(root2,text="Enter email to change password",fg="Brown")
             l1.grid(row=16,column=1)
             e1=tk.Entry(root2)
@@ -276,7 +252,6 @@ def login():
                 messagebox.showinfo("Success","Account deleted successfully")
                 root2.destroy()
                 login()
-            
             
             l1=tk.Label(root2,text="Enter Username")
             l1.grid(row=21,column=1)
@@ -309,11 +284,9 @@ def login():
         b5.grid(row=2,column=4)
         b6=tk.Button(root2, text="Logout",width=10,command=logout,fg="white",bg="brown")
         b6.grid(row=2,column=5)
-
         root2.mainloop()
     
     def userlogin():
-        
         username=un_entry.get()
         pwd=pwd_entry.get()
         
@@ -332,7 +305,6 @@ def login():
             for row in reader:
                 if username==row[0] and pwd==row[1]:
                     messagebox.showinfo("Success","You are logged in")
-
                     loginpage()
                 
         messagebox.showinfo("Error","Please try again later")

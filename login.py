@@ -235,20 +235,13 @@ def login():
             def changepwd():
                 em=e1.get()
                 pwd=e2.get()
-
+                oldpwd=""
                 if em=="" or pwd=="":
-                    messagebox.showinfo("Error","All fields are required")
-
-                '''if os.path.exists("C:/Users/BLAUPLUG/Documents/Python_programs/User Management System/userdb.csv"):
-                    with open("C:/Users/BLAUPLUG/Documents/Python_programs/User Management System/userdb.csv", "a") as file:
-                        writer = csv.writer(file)
-                        if em==row[1]:
-                            pwd=row[2]:'''
-                
-                
+                    messagebox.showinfo("Error","All fields are required")           
                            
                 df = pd.read_csv("C:/Users/BLAUPLUG/Documents/Python_programs/User Management System/userdb.csv") 
-                df.loc[em,"Password"] = pwd            
+                df.loc[em,'Password']=df['Password'].replace({oldpwd: pwd}) 
+                #df.loc[em,"Password"] = pwd            
                 df.to_csv("C:/Users/BLAUPLUG/Documents/Python_programs/User Management System/userdb.csv", index=False) 
                 messagebox.showinfo("Success","Password changed successfully")
                 

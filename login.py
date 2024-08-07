@@ -5,8 +5,7 @@ from PIL import ImageTk,Image
 import os 
 import pandas as pd
 import re
-from tkinter import PhotoImage,Label
-
+#from tkinter import PhotoImage,Label
 
 def login():
     def adminlogin():
@@ -38,6 +37,7 @@ def login():
                     
                     df = pd.read_csv('C:/Users/BLAUPLUG/Documents/Python_programs/User Management System/userdb.csv',index_col='Username')
                     #df = df.drop(df[df.Username == un].index)
+                    
                     df=df.drop(un)
                     df.to_csv('C:/Users/BLAUPLUG/Documents/Python_programs/User Management System/userdb.csv', index=False)
                                     
@@ -90,12 +90,28 @@ def login():
                
         def uploadimage():
             def upload():
+                global img
                 info1=path_entry.get()
                 if info1=="":
                     messagebox.showinfo("Error","PLease enter path")
                     return
                 
-                canvas=tk.Canvas(root2,bg='white',width=200,height=200)
+                frame = tk.Frame(root2, width=500, height=500)
+                #frame.pack(fill=tk.BOTH,expand=True)
+                frame.grid(row=5,column=5)
+                frame.columnconfigure(0,weight=1)
+                frame.rowconfigure(0,weight=1)
+
+# Create an object of tkinter ImageTk
+                im=Image.open("C:/Users/BLAUPLUG/Documents/Python_programs/User Management System/nature.jpg")
+                im=im.resize((200,200))
+                img = ImageTk.PhotoImage(im)
+
+                lab=tk.Label(frame,image=img,bg='white')
+                lab.image=img
+                lab.grid(row=5,column=5)
+
+                '''canvas=tk.Canvas(root2,bg='white',width=200,height=200)
                 canvas.grid(row=5,column=5)
                 img=Image.open("C:/Users/BLAUPLUG/Documents/Python_programs/User Management System/flower.jpg")
                 image = img.resize((180, 180))
@@ -104,7 +120,7 @@ def login():
                 canvas.create_image(image=photo_image,anchor=tk.CENTER)
 
                 #l3=tk.Label(canvas,image=photo_image)
-                #l3.pack()
+                #l3.pack()'''
                 
             lbl=tk.Label(root2, text="Enter path to upload image",fg="brown")
             lbl.grid(row=3,column=1)
@@ -113,19 +129,21 @@ def login():
             b1=tk.Button(root2,text="Upload",command=upload,bg="brown",fg="white")
             b1.grid(row=5,column=1)
         
+        
         def viewprofile():
             def view():
+                global user
                 un=e1.get()
                 if not re.match(r"^[A-Za-z\s]+$",un):
                     messagebox.showinfo("Error","Please enter valid Username")
                     return
                 if os.path.exists("C:/Users/BLAUPLUG/Documents/Python_programs/User Management System/userdb.csv"):
                     with open("C:/Users/BLAUPLUG/Documents/Python_programs/User Management System/userdb.csv", "r") as file:
-                        reader = csv.reader(file)
+                        reader=csv.reader(file)
                         for row in reader:
                             if un in row:
                                 messagebox.showinfo("User Details", f"Username: {row[0]}\nPassword: {row[1]}\nEmail: {row[2]}")
-                                return                           
+                                return      
                     
             l1=tk.Label(root2,text="Enter username",fg="Brown")
             l1.grid(row=7,column=0)
@@ -150,7 +168,7 @@ def login():
                         return
                     
                     df = pd.read_csv("C:/Users/BLAUPLUG/Documents/Python_programs/User Management System/userdb.csv") 
-                    df['Username'] = df['Username'].replace({oldun: newun}) 
+                    df['Username'] = df['Username'].replace({oldun:newun}) 
                     df.to_csv("C:/Users/BLAUPLUG/Documents/Python_programs/User Management System/userdb.csv", index=False) 
             
                     messagebox.showinfo("Success","Username updated succesfully")
@@ -166,7 +184,7 @@ def login():
                     e2.grid(row=12,column=1)
                                         
                     updateun_btn=tk.Button(root2,text="Update Username",fg="white",bg="brown",command=update_un)
-                    updateun_btn.grid(row=5,column=1)
+                    updateun_btn.grid(row=13,column=1)
                      
                 def update_em():
                     oldemail=e1.get()
@@ -185,7 +203,7 @@ def login():
                         return
 
                     df = pd.read_csv("C:/Users/BLAUPLUG/Documents/Python_programs/User Management System/userdb.csv") 
-                    df['Username'] = df['Username'].replace({oldemail: newemail}) 
+                    df['Email'] = df['Email'].replace({oldemail: newemail}) 
                     df.to_csv("C:/Users/BLAUPLUG/Documents/Python_programs/User Management System/userdb.csv", index=False) 
                
                     messagebox.showinfo("Success","Email updated succesfully")
@@ -195,12 +213,12 @@ def login():
                     l1=tk.Label(root2,text="Enter old email and new email ",fg="Brown")
                     l1.grid(row=12,column=4)
                     e1=tk.Entry(root2)
-                    e1.grid(row=14,column=4)
+                    e1.grid(row=13,column=4)
                     e2=tk.Entry(root2)
-                    e2.grid(row=15,column=4)
+                    e2.grid(row=14,column=4)
                     
                     updateem_btn=tk.Button(root2,text="Update Email",fg="white",bg="brown",command=update_em)
-                    updateem_btn.grid(row=16,column=4)
+                    updateem_btn.grid(row=15,column=4)
                     
             l4=tk.Label(root2,text="What do you want to update?",fg="Brown")
             l4.grid(row=13,column=1)
@@ -220,7 +238,15 @@ def login():
 
                 if em=="" or pwd=="":
                     messagebox.showinfo("Error","All fields are required")
-                                
+
+                '''if os.path.exists("C:/Users/BLAUPLUG/Documents/Python_programs/User Management System/userdb.csv"):
+                    with open("C:/Users/BLAUPLUG/Documents/Python_programs/User Management System/userdb.csv", "a") as file:
+                        writer = csv.writer(file)
+                        if em==row[1]:
+                            pwd=row[2]:'''
+                
+                
+                           
                 df = pd.read_csv("C:/Users/BLAUPLUG/Documents/Python_programs/User Management System/userdb.csv") 
                 df.loc[em,"Password"] = pwd            
                 df.to_csv("C:/Users/BLAUPLUG/Documents/Python_programs/User Management System/userdb.csv", index=False) 
@@ -270,6 +296,7 @@ def login():
                     root2.destroy()
                     messagebox.showinfo("Success","User successfully logged out")
                     login()
+                    
                 else:
                     loginpage()
         root2=tk.Tk()
@@ -309,10 +336,10 @@ def login():
                 if username==row[0] and pwd==row[1]:
                     messagebox.showinfo("Success","You are logged in")
                     loginpage()
-                
         messagebox.showinfo("Error","Please try again later")
         un_entry.delete(0,tk.END)
         pwd_entry.delete(0,tk.END)
+
 
     root=tk.Tk()
     root.title("Login page")

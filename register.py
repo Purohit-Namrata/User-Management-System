@@ -5,6 +5,7 @@ import pymysql
 import bcrypt
 import csv
 
+
 def register():
     def checkPassword(password):
         upperChars, lowerChars, specialChars, digits, length = 0, 0, 0, 0, 0
@@ -76,6 +77,8 @@ def register():
             un_entry.delete(0,tk.END)
             pwd_entry.delete(0,tk.END)
             email_entry.delete(0,tk.END)
+            root.destroy()
+            
 
 
     root=tk.Tk()
@@ -112,3 +115,4 @@ def register():
     submit_btn=tk.Button(root, text="Submit",command=submit,bg="brown",fg="white")
     submit_btn.grid(row=10,column=1)
     root.mainloop()
+    

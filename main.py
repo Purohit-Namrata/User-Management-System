@@ -2,6 +2,7 @@ import tkinter as tk
 from register import *
 from login import *
 
+
 root=tk.Tk()
 root.title("User Management Sytem")
 root.minsize(width=400,height=400)

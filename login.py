@@ -107,9 +107,9 @@ def login():
                 im=im.resize((200,200))
                 img = ImageTk.PhotoImage(im)
 
-                lab=tk.Label(frame,image=img,bg='white')
+                lab=tk.Label(frame,image=img,bg='white',compound=tk.CENTER)
                 lab.image=img
-                lab.grid(row=5,column=5)
+                lab.pack(expand=1,fill=tk.BOTH)
 
                 '''canvas=tk.Canvas(root2,bg='white',width=200,height=200)
                 canvas.grid(row=5,column=5)
@@ -240,9 +240,8 @@ def login():
                     messagebox.showinfo("Error","All fields are required")           
                            
                 df = pd.read_csv("C:/Users/BLAUPLUG/Documents/Python_programs/User Management System/userdb.csv") 
-                df.loc[em,'Password']=df['Password'].replace({oldpwd: pwd}) 
-                #df.loc[em,"Password"] = pwd            
-                df.to_csv("C:/Users/BLAUPLUG/Documents/Python_programs/User Management System/userdb.csv", index=False) 
+                df.loc[em,"Password"] = pwd         
+                df.to_csv("C:/Users/BLAUPLUG/Documents/Python_programs/User Management System/userdb.csv", index=True) 
                 messagebox.showinfo("Success","Password changed successfully")
                 
             l1=tk.Label(root2,text="Enter email to change password",fg="Brown")
@@ -321,7 +320,6 @@ def login():
             messagebox.showinfo("Error","Please enter a valid username")
             return
         
-        #hashedpwd = hash(pwd) 
         
         with open("C:/Users/BLAUPLUG/Documents/Python_programs/User Management System/userdb.csv", mode='r') as f:
             reader=csv.reader(f)
@@ -330,10 +328,7 @@ def login():
                     messagebox.showinfo("Success","You are logged in")
                     loginpage()
         messagebox.showinfo("Error","Please try again later")
-        un_entry.delete(0,tk.END)
-        pwd_entry.delete(0,tk.END)
-
-
+        
     root=tk.Tk()
     root.title("Login page")
     root.geometry("400x400")

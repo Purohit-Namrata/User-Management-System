@@ -1,8 +1,6 @@
 import tkinter as tk
 from tkinter import messagebox
 import re
-import pymysql
-import bcrypt
 import csv
 
 

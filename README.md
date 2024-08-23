@@ -4,4 +4,4 @@
 3. The **update profile button** : username is not getting updated.
 
 
-Please Check it edit it according to the requiremnts and let me know 
+Please Check all edit it according to the requiremnts and let me know 

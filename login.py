@@ -1,354 +1,293 @@
 import tkinter as tk
 from tkinter import messagebox
-import csv
-from PIL import ImageTk,Image
-import os 
+from PIL import ImageTk, Image
+import os
 import pandas as pd
+import csv
 import re
-#from tkinter import PhotoImage,Label
+import bcrypt
+
+def load_user_data():
+    """Load user data from CSV."""
+    userdb_path = os.path.join("C:/Users/BLAUPLUG/Documents/Python_programs/User Management System", "userdb.csv")
+    if not os.path.exists(userdb_path):
+        return pd.DataFrame(columns=['Username', 'Password', 'Email'])
+    return pd.read_csv(userdb_path)
+
+def save_user_data(df):
+    """Save user data to CSV."""
+    userdb_path = os.path.join("C:/Users/BLAUPLUG/Documents/Python_programs/User Management System", "userdb.csv")
+    df.to_csv(userdb_path, index=False)
 
 def login():
     def adminlogin():
         def adminpage():
-            
             def viewall():
-                if os.path.exists("C:/Users/BLAUPLUG/Documents/Python_programs/User Management System/userdb.csv"):
-                    with open("C:/Users/BLAUPLUG/Documents/Python_programs/User Management System/userdb.csv", "r") as file:
-                        reader = csv.reader(file)
-                        users = [row for row in reader]
-                        if users:
-                            users_info = "\n".join(["USERNAME: {}, PASSWORD: {}, EMAIL: {}".format(*user) for user in users])
-                            messagebox.showinfo("Users List", users_info)
-                        else:
-                            messagebox.showinfo("Users List", "No user found.")
+                df = load_user_data()
+                if df.empty:
+                    messagebox.showinfo("Users List", "No user found.")
                 else:
-                    messagebox.showinfo("Users List", "The user list is empty.")
-            
-            
+                    users_info = "\n".join([f"USERNAME: {row['Username']}, EMAIL: {row['Email']}" for _, row in df.iterrows()])
+                    messagebox.showinfo("Users List", users_info)
+
             def deleteacc():
                 def deleterow():
-                    un=e1.get()
-                    if un=="":
-                        messagebox.showinfo("Error","Please enter Username")
-                        return
-                    if not re.match(r'^[A-Za-z\s]+$',un):
-                        messagebox.showinfo("Error","Please enter a valid username")
+                    username = e1.get().strip()
+                    if not username:
+                        messagebox.showinfo("Error", "Please enter a Username")
                         return
                     
-                    df = pd.read_csv('C:/Users/BLAUPLUG/Documents/Python_programs/User Management System/userdb.csv',index_col='Username')
-                    #df = df.drop(df[df.Username == un].index)
+                    df = load_user_data()
+                    if username not in df['Username'].values:
+                        messagebox.showinfo("Error", "Username not found")
+                        return
                     
-                    df=df.drop(un)
-                    df.to_csv('C:/Users/BLAUPLUG/Documents/Python_programs/User Management System/userdb.csv', index=False)
-                                    
-                    messagebox.showinfo("Success","Account deleted")
+                    df = df[df['Username'] != username]
+                    save_user_data(df)
+                    messagebox.showinfo("Success", "Account deleted")
+                    
+                lbl = tk.Label(root1, text="Enter username to delete account", fg="brown")
+                lbl.grid(row=6, column=0)
+                e1 = tk.Entry(root1)
+                e1.grid(row=6, column=1)
+                b1 = tk.Button(root1, text="Delete", command=deleterow, bg="brown", fg="white")
+                b1.grid(row=8, column=1)
                 
-                lbl=tk.Label(root1,text="Enter username to delete account",fg="Brown")
-                lbl.grid(row=6,column=0)
-                e1=tk.Entry(root1)
-                e1.grid(row=6,column=1)
-                
-                b1=tk.Button(root1,text="Delete",command=deleterow,bg="Brown",fg="White")
-                b1.grid(row=8,column=1)
-                              
             def logout():
-                answer=messagebox.askyesno("Sure?","Are you sure you want to logout?")
-                if answer:
+                if messagebox.askyesno("Sure?", "Are you sure you want to logout?"):
                     root1.destroy()
-                    messagebox.showinfo("Success","Admin successfully logged out")
+                    messagebox.showinfo("Success", "Admin successfully logged out")
                     login()
-                else:
-                    adminpage()
             
-            root1=tk.Tk()
+            root1 = tk.Tk()
             root1.geometry("400x400")
-            root1.title("Admin page")
+            root1.title("Admin Page")
             root1.configure(bg="orange")
-            l1=tk.Label(root1, text="Welcome, Admin!",font=10,fg="Brown")
-            l1.grid(row=1,column=1)
-            b1=tk.Button(root1, text="View all users",command=viewall,fg="white",bg="brown")
-            b1.grid(row=3,column=0)
-            b2=tk.Button(root1,text="Delete accounts",command=deleteacc,fg="white",bg="brown")
-            b2.grid(row=3,column=1)
-            b3=tk.Button(root1, text="Logout",command=logout,fg="white",bg="brown")
-            b3.grid(row=3,column=2)
+            
+            tk.Label(root1, text="Welcome, Admin!", font=("Arial", 16), fg="brown").grid(row=1, column=1)
+            tk.Button(root1, text="View all users", command=viewall, fg="white", bg="brown").grid(row=3, column=0)
+            tk.Button(root1, text="Delete accounts", command=deleteacc, fg="white", bg="brown").grid(row=3, column=1)
+            tk.Button(root1, text="Logout", command=logout, fg="white", bg="brown").grid(row=3, column=2)
             root1.mainloop()
 
-        username=un_entry.get()
-        pwd=pwd_entry.get()
-        if username=="" or pwd=="":
-            messagebox.showinfo("Insert status","All fields are required")
-        
-        if username=="admin" and pwd=="admin":
-            messagebox.showinfo("Admin logged in ","Welcome, Admin!")
+        username = un_entry.get().strip()
+        pwd = pwd_entry.get().strip()
+        if username == "admin" and pwd == "admin":
+            messagebox.showinfo("Admin logged in", "Welcome, Admin!")
             adminpage()
-            
         else:
-            messagebox.showinfo("Error","Invalid username or passord")    
+            messagebox.showinfo("Error", "Invalid username or password")
 
     def loginpage():
-               
         def uploadimage():
             def upload():
-                global img
-                info1=path_entry.get()
-                if info1=="":
-                    messagebox.showinfo("Error","PLease enter path")
+                path = path_entry.get().strip()
+                if not path:
+                    messagebox.showinfo("Error", "Please enter a path")
                     return
-                
-                frame = tk.Frame(root2, width=500, height=500)
-                #frame.pack(fill=tk.BOTH,expand=True)
-                frame.grid(row=5,column=5)
-                frame.columnconfigure(0,weight=1)
-                frame.rowconfigure(0,weight=1)
 
-# Create an object of tkinter ImageTk
-                im=Image.open("C:/Users/BLAUPLUG/Documents/Python_programs/User Management System/nature.jpg")
-                im=im.resize((200,200))
-                img = ImageTk.PhotoImage(im)
+                if not os.path.isfile(path):
+                    messagebox.showinfo("Error", "File does not exist")
+                    return
 
-                lab=tk.Label(frame,image=img,bg='white',compound=tk.CENTER)
-                lab.image=img
-                lab.pack(expand=1,fill=tk.BOTH)
+                try:
+                    im = Image.open(path)
+                    im = im.resize((200, 200))
+                    img = ImageTk.PhotoImage(im)
+                    lab.config(image=img)
+                    lab.image = img
+                except Exception as e:
+                    messagebox.showinfo("Error", f"Failed to load image: {e}")
 
-                '''canvas=tk.Canvas(root2,bg='white',width=200,height=200)
-                canvas.grid(row=5,column=5)
-                img=Image.open("C:/Users/BLAUPLUG/Documents/Python_programs/User Management System/flower.jpg")
-                image = img.resize((180, 180))
-                photo_image=ImageTk.PhotoImage(image)
-                canvas.photo_image=photo_image
-                canvas.create_image(image=photo_image,anchor=tk.CENTER)
+            lbl = tk.Label(root2, text="Enter path to upload image", fg="brown")
+            lbl.grid(row=3, column=1)
+            path_entry = tk.Entry(root2, width=20)
+            path_entry.grid(row=4, column=1)
+            tk.Button(root2, text="Upload", command=upload, bg="brown", fg="white").grid(row=5, column=1)
 
-                #l3=tk.Label(canvas,image=photo_image)
-                #l3.pack()'''
-                
-            lbl=tk.Label(root2, text="Enter path to upload image",fg="brown")
-            lbl.grid(row=3,column=1)
-            path_entry=tk.Entry(root2,width=20)
-            path_entry.grid(row=4,column=1)
-            b1=tk.Button(root2,text="Upload",command=upload,bg="brown",fg="white")
-            b1.grid(row=5,column=1)
-        
-        
+
         def viewprofile():
             def view():
-                global user
-                un=e1.get()
-                if not re.match(r"^[A-Za-z\s]+$",un):
-                    messagebox.showinfo("Error","Please enter valid Username")
+                username = e1.get().strip()
+                if not re.match(r"^[A-Za-z\s]+$", username):
+                    messagebox.showinfo("Error", "Please enter a valid username")
                     return
-                if os.path.exists("C:/Users/BLAUPLUG/Documents/Python_programs/User Management System/userdb.csv"):
-                    with open("C:/Users/BLAUPLUG/Documents/Python_programs/User Management System/userdb.csv", "r") as file:
-                        reader=csv.reader(file)
-                        for row in reader:
-                            if un in row:
-                                messagebox.showinfo("User Details", f"Username: {row[0]}\nPassword: {row[1]}\nEmail: {row[2]}")
-                                return      
-                    
-            l1=tk.Label(root2,text="Enter username",fg="Brown")
-            l1.grid(row=7,column=0)
-            e1=tk.Entry(root2)
-            e1.grid(row=8,column=0)
-            b1=tk.Button(root2,text="View profile",bg="brown",fg="white",command=view)
-            b1.grid(row=9,column=1)
-            
+                
+                df = load_user_data()
+                user = df[df['Username'] == username]
+                if user.empty:
+                    messagebox.showinfo("User Details", "User not found")
+                else:
+                    messagebox.showinfo("User Details", f"Username: {user['Username'].values[0]}\nEmail: {user['Email'].values[0]}")
+
+            tk.Label(root2, text="Enter username", fg="brown").grid(row=7, column=0)
+            e1 = tk.Entry(root2)
+            e1.grid(row=8, column=0)
+            tk.Button(root2, text="View Profile", bg="brown", fg="white", command=view).grid(row=9, column=1)
+
         def updateprofile():
             def update():
-                def update_un():
-                    oldun=e1.get()
-                    newun=e2.get()
-                    if oldun=="" or newun=="":
-                        messagebox.showinfo("Error","All fields are required")
+                selecteditem = t1.get(tk.ACTIVE)
+                if selecteditem == "Username":
+                    def update_un():
+                        oldun = e1.get().strip()
+                        newun = e2.get().strip()
+                        if not oldun or not newun:
+                            messagebox.showinfo("Error", "All fields are required")
+                            return
 
-                    if not re.match(r"^[A-Za-z\s]+$",oldun):
-                        messagebox.showinfo("Error","Please enter valid old username")
-                        return
-                    if not re.match(r"^[A-Za-z\s]+$",newun):
-                        messagebox.showinfo("Error","Please enter valid new username")
-                        return
-                    
-                    df = pd.read_csv("C:/Users/BLAUPLUG/Documents/Python_programs/User Management System/userdb.csv") 
-                    df['Username'] = df['Username'].replace({oldun:newun}) 
-                    df.to_csv("C:/Users/BLAUPLUG/Documents/Python_programs/User Management System/userdb.csv", index=False) 
-            
-                    messagebox.showinfo("Success","Username updated succesfully")
-               
-                selecteditem=t1.get(0)
-                if selecteditem=="Username":
-                    l1=tk.Label(root2,text="Enter old username and new username ",fg="Brown")
-                    l1.grid(row=10,column=1)
+                        df = load_user_data()
+                        if oldun not in df['Username'].values:
+                            messagebox.showinfo("Error", "Old username not found")
+                            return
 
-                    e1=tk.Entry(root2)
-                    e1.grid(row=11,column=1)
-                    e2=tk.Entry(root2)
-                    e2.grid(row=12,column=1)
-                                        
-                    updateun_btn=tk.Button(root2,text="Update Username",fg="white",bg="brown",command=update_un)
-                    updateun_btn.grid(row=13,column=1)
-                     
-                def update_em():
-                    oldemail=e1.get()
-                    newemail=e2.get()
-                    if oldemail=="" or newemail=="":
-                        messagebox.showinfo("Error","All fields are required")
+                        df.loc[df['Username'] == oldun, 'Username'] = newun
+                        save_user_data(df)
+                        messagebox.showinfo("Success", "Username updated successfully")
                     
-                    regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
+                    tk.Label(root2, text="Enter old username and new username", fg="brown").grid(row=10, column=1)
+                    e1 = tk.Entry(root2)
+                    e1.grid(row=11, column=1)
+                    e2 = tk.Entry(root2)
+                    e2.grid(row=12, column=1)
+                    tk.Button(root2, text="Update Username", fg="white", bg="brown", command=update_un).grid(row=13, column=1)
 
-                    if not (re.fullmatch(regex, oldemail)):
-                        messagebox.showinfo("Error","Please enter a valid old email id")
-                        return
-                    
-                    if not (re.fullmatch(regex, newemail)):
-                        messagebox.showinfo("Error","Please enter a valid new email id")
-                        return
+                    def update_em():
+                        oldemail = e1.get().strip()
+                        newemail = e2.get().strip()
+                        if not oldemail or not newemail:
+                            messagebox.showinfo("Error", "All fields are required")
+                            return
 
-                    df = pd.read_csv("C:/Users/BLAUPLUG/Documents/Python_programs/User Management System/userdb.csv") 
-                    df['Email'] = df['Email'].replace({oldemail: newemail}) 
-                    df.to_csv("C:/Users/BLAUPLUG/Documents/Python_programs/User Management System/userdb.csv", index=False) 
-               
-                    messagebox.showinfo("Success","Email updated succesfully")
-    
-                selecteditem=t1.get(1)
-                if selecteditem=="Email":
-                    l1=tk.Label(root2,text="Enter old email and new email ",fg="Brown")
-                    l1.grid(row=12,column=4)
-                    e1=tk.Entry(root2)
-                    e1.grid(row=13,column=4)
-                    e2=tk.Entry(root2)
-                    e2.grid(row=14,column=4)
-                    
-                    updateem_btn=tk.Button(root2,text="Update Email",fg="white",bg="brown",command=update_em)
-                    updateem_btn.grid(row=15,column=4)
-                    
-            l4=tk.Label(root2,text="What do you want to update?",fg="Brown")
-            l4.grid(row=13,column=1)
-            t1=tk.Listbox(root2,height = 5, width = 10,selectmode=tk.MULTIPLE)
-            items=("Username","Email")
-            t1.insert(0,*items)
-            
-            t1.grid(row=14,column=1)
-            
-            b1=tk.Button(root2,text="Update",bg="brown",fg="white",command=update)
-            b1.grid(row=15,column=1)
-           
+                        if not re.fullmatch(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b', oldemail):
+                            messagebox.showinfo("Error", "Invalid old email address")
+                            return
+                        if not re.fullmatch(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b', newemail):
+                            messagebox.showinfo("Error", "Invalid new email address")
+                            return
+
+                        df = load_user_data()
+                        if oldemail not in df['Email'].values:
+                            messagebox.showinfo("Error", "Old email not found")
+                            return
+
+                        df.loc[df['Email'] == oldemail, 'Email'] = newemail
+                        save_user_data(df)
+                        messagebox.showinfo("Success", "Email updated successfully")
+
+                    tk.Label(root2, text="Enter old email and new email", fg="brown").grid(row=12, column=4)
+                    e1 = tk.Entry(root2)
+                    e1.grid(row=13, column=4)
+                    e2 = tk.Entry(root2)
+                    e2.grid(row=14, column=4)
+                    tk.Button(root2, text="Update Email", fg="white", bg="brown", command=update_em).grid(row=15, column=4)
+
+            tk.Label(root2, text="What do you want to update?", fg="brown").grid(row=13, column=1)
+            t1 = tk.Listbox(root2, height=5, width=10)
+            t1.insert(0, "Username")
+            t1.insert(1, "Email")
+            t1.grid(row=14, column=1)
+            tk.Button(root2, text="Update", bg="brown", fg="white", command=update).grid(row=15, column=1)
+
         def managepwd():
             def changepwd():
-                em=e1.get()
-                pwd=e2.get()
-                oldpwd=""
-                if em=="" or pwd=="":
-                    messagebox.showinfo("Error","All fields are required")           
-                           
-                df = pd.read_csv("C:/Users/BLAUPLUG/Documents/Python_programs/User Management System/userdb.csv") 
-                df.loc[em,"Password"] = pwd         
-                df.to_csv("C:/Users/BLAUPLUG/Documents/Python_programs/User Management System/userdb.csv", index=True) 
-                messagebox.showinfo("Success","Password changed successfully")
-                
-            l1=tk.Label(root2,text="Enter email to change password",fg="Brown")
-            l1.grid(row=16,column=1)
-            e1=tk.Entry(root2)
-            e1.grid(row=17,column=1)
+                email = e1.get().strip()
+                pwd = e2.get().strip()
+                if not email or not pwd:
+                    messagebox.showinfo("Error", "All fields are required")
+                    return
 
-            l2=tk.Label(root2,text="Enter new password",fg="brown")
-            l2.grid(row=18,column=1)
-            e2=tk.Entry(root2)
-            e2.grid(row=19,column=1)
-            
-            b1=tk.Button(root2,text="Change Password",command=changepwd,fg="white",bg="brown")
-            b1.grid(row=20,column=1)
-        
+                df = load_user_data()
+                if email not in df['Email'].values:
+                    messagebox.showinfo("Error", "Email not found")
+                    return
+
+                hashed_pwd = bcrypt.hashpw(pwd.encode(), bcrypt.gensalt()).decode()
+                df.loc[df['Email'] == email, 'Password'] = hashed_pwd
+                save_user_data(df)
+                messagebox.showinfo("Success", "Password changed successfully")
+
+
+            tk.Label(root2, text="Enter email to change password", fg="brown").grid(row=16, column=1)
+            e1 = tk.Entry(root2)
+            e1.grid(row=17, column=1)
+            tk.Label(root2, text="Enter new password", fg="brown").grid(row=18, column=1)
+            e2 = tk.Entry(root2, show="*")
+            e2.grid(row=19, column=1)
+            tk.Button(root2, text="Change Password", command=changepwd, fg="white", bg="brown").grid(row=20, column=1)
+
         def deleteacc():
             def delete():
-                un=e1.get()
-                if un=="":
-                    messagebox.showinfo("Error","Email field is required")
-                if not re.match(r'^[A-Za-z\s]+$',un):
-                    messagebox.showinfo("Error","Please enter a valid username")
+                username = e1.get().strip()
+                if not username:
+                    messagebox.showinfo("Error", "Username field is required")
                     return
                 
-                df = pd.read_csv('C:/Users/BLAUPLUG/Documents/Python_programs/User Management System/userdb.csv',index_col='Username')
-                df=df.drop(un)
-                #df = df.drop(df[df.Username == un].index)
-                df.to_csv('C:/Users/BLAUPLUG/Documents/Python_programs/User Management System/userdb.csv', index=False)
+                df = load_user_data()
+                if username not in df['Username'].values:
+                    messagebox.showinfo("Error", "Username not found")
+                    return
                 
-                messagebox.showinfo("Success","Account deleted successfully")
+                df = df[df['Username'] != username]
+                save_user_data(df)
+                messagebox.showinfo("Success", "Account deleted successfully")
                 root2.destroy()
                 login()
-            
-            l1=tk.Label(root2,text="Enter Username")
-            l1.grid(row=21,column=1)
-            e1=tk.Entry(root2)
-            e1.grid(row=22,column=1)
-            b1=tk.Button(root2,text="delete",bg="brown",fg="white",command=delete)
-            b1.grid(row=23,column=1)
+
+            tk.Label(root2, text="Enter Username", fg="brown").grid(row=21, column=1)
+            e1 = tk.Entry(root2)
+            e1.grid(row=22, column=1)
+            tk.Button(root2, text="Delete", bg="brown", fg="white", command=delete).grid(row=23, column=1)
                 
         def logout():
-                answer=messagebox.askyesno("Sure?","Are you sure you want to logout?")
-                if answer:
-                    root2.destroy()
-                    messagebox.showinfo("Success","User successfully logged out")
-                    login()
-                    
-                else:
-                    loginpage()
-        root2=tk.Tk()
+            if messagebox.askyesno("Sure?", "Are you sure you want to logout?"):
+                root2.destroy()
+                messagebox.showinfo("Success", "User successfully logged out")
+                login()
+
+        root2 = tk.Tk()
         root2.geometry("800x800")
-        root2.title("Login page")
-        b1=tk.Button(root2,text="Upload image",command=uploadimage,fg="white",bg="brown")
-        b1.grid(row=2,column=0)
-        b2=tk.Button(root2,text="View Profile",width=10,command=viewprofile,fg="white",bg="brown")
-        b2.grid(row=2,column=1)
-        b3=tk.Button(root2,text="Update Profile",width=10,command=updateprofile,fg="white",bg="brown")
-        b3.grid(row=2,column=2)
-        b4=tk.Button(root2, text="Delete account",width=10,command=deleteacc,fg="white",bg="brown")
-        b4.grid(row=2,column=3)
-        b5=tk.Button(root2,text="Manage password",width=10,command=managepwd,fg="white",bg="brown")
-        b5.grid(row=2,column=4)
-        b6=tk.Button(root2, text="Logout",width=10,command=logout,fg="white",bg="brown")
-        b6.grid(row=2,column=5)
+        root2.title("Login Page")
+        tk.Button(root2, text="Upload Image", command=uploadimage, fg="white", bg="brown").grid(row=2, column=0)
+        tk.Button(root2, text="View Profile", width=10, command=viewprofile, fg="white", bg="brown").grid(row=2, column=1)
+        tk.Button(root2, text="Update Profile", width=10, command=updateprofile, fg="white", bg="brown").grid(row=2, column=2)
+        tk.Button(root2, text="Delete Account", width=10, command=deleteacc, fg="white", bg="brown").grid(row=2, column=3)
+        tk.Button(root2, text="Manage Password", width=10, command=managepwd, fg="white", bg="brown").grid(row=2, column=4)
+        tk.Button(root2, text="Logout", width=10, command=logout, fg="white", bg="brown").grid(row=2, column=5)
+        lab = tk.Label(root2, bg='white')
+        lab.grid(row=5, column=5, rowspan=5, columnspan=5, sticky='nsew')
         root2.mainloop()
     
     def userlogin():
-        username=un_entry.get()
-        pwd=pwd_entry.get()
+        username = un_entry.get().strip()
+        pwd = pwd_entry.get().strip()
         
-        if username=="" or pwd=="":
-            messagebox.showinfo("Insert status","All fields are required")        
+        if not username or not pwd:
+            messagebox.showinfo("Error", "All fields are required")
             return
         
-        if not re.match(r"^[A-Za-z\s]+",username):
-            messagebox.showinfo("Error","Please enter a valid username")
-            return
+        df = load_user_data()
+        user = df[df['Username'] == username]
+        if user.empty or not bcrypt.checkpw(pwd.encode(), user['Password'].values[0].encode()):
+            messagebox.showinfo("Error", "Invalid username or password")
+        else:
+            messagebox.showinfo("Success", "You are logged in")
+            loginpage()
         
-        
-        with open("C:/Users/BLAUPLUG/Documents/Python_programs/User Management System/userdb.csv", mode='r') as f:
-            reader=csv.reader(f)
-            for row in reader:
-                if username==row[0] and pwd==row[1]:
-                    messagebox.showinfo("Success","You are logged in")
-                    loginpage()
-        messagebox.showinfo("Error","Please try again later")
-        
-    root=tk.Tk()
-    root.title("Login page")
+    root = tk.Tk()
+    root.title("Login Page")
     root.geometry("400x400")
     root.configure(bg="orange")
-    l1=tk.Label(root,text="Welcome to login page",fg="brown")
-    l1.grid(row=0,column=1)
-    un_lbl=tk.Label(root,text='Username',fg="brown")
-    un_lbl.grid(row=1,column=0)
-    un_entry=tk.Entry(root)
-    un_entry.grid(row=1,column=1)
-
-    pwd_lbl=tk.Label(root,text="Password",fg="brown")
-    pwd_lbl.grid(row=2,column=0)
-    pwd_entry=tk.Entry(root,show="*")
-    pwd_entry.grid(row=2,column=1)
-    
-    b1=tk.Button(root,text="Admin login",command=adminlogin,fg="white",bg="brown")
-    b1.grid(row=4,column=1)
-
-    b2=tk.Button(root,text="User login",command=userlogin,fg="white",bg="brown")
-    b2.grid(row=5,column=1)
-
+    tk.Label(root, text="Welcome to login page", fg="brown").grid(row=0, column=1)
+    tk.Label(root, text='Username', fg="brown").grid(row=1, column=0)
+    un_entry = tk.Entry(root)
+    un_entry.grid(row=1, column=1)
+    tk.Label(root, text="Password", fg="brown").grid(row=2, column=0)
+    pwd_entry = tk.Entry(root, show="*")
+    pwd_entry.grid(row=2, column=1)
+    tk.Button(root, text="Admin Login", command=adminlogin, fg="white", bg="brown").grid(row=4, column=1)
+    tk.Button(root, text="User Login", command=userlogin, fg="white", bg="brown").grid(row=5, column=1)
     root.mainloop()
+
+if __name__ == "__main__":
+    login()

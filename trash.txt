@@ -20,3 +20,28 @@
     submit_btn=tk.Button(root, text="Submit",command=submit,bg="brown",fg="white")
     submit_btn.grid(row=10,column=1)
     root.mainloop()
+
+            def logout():
+                if messagebox.askyesno("Sure?", "Are you sure you want to logout?"):
+                    root1.destroy()
+                    messagebox.showinfo("Success", "Admin successfully logged out")
+                    login()
+
+            root1 = tk.Tk()
+            root1.geometry("400x400")
+            root1.title("Admin Page")
+            root1.configure(bg="orange")
+
+            tk.Label(root1, text="Welcome, Admin!", font=("Arial", 16), fg="brown").grid(row=1, column=1)
+            tk.Button(root1, text="View all users", command=viewall, fg="white", bg="brown").grid(row=3, column=0)
+            tk.Button(root1, text="Delete accounts", command=deleteacc, fg="white", bg="brown").grid(row=3, column=1)
+            tk.Button(root1, text="Logout", command=logout, fg="white", bg="brown").grid(row=3, column=2)
+            root1.mainloop()
+
+        username = un_entry.get().strip()
+        pwd = pwd_entry.get().strip()
+        if username == "admin" and pwd == "admin":
+            messagebox.showinfo("Admin logged in", "Welcome, Admin!")
+            adminpage()
+        else:
+            messagebox.showinfo("Error", "Invalid username or password")
